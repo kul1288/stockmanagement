@@ -22,7 +22,17 @@ export default function Layout({ children }) {
         }
     };
 
-    if (status === "loading") return <div>Loading...</div>; // Show loading state
+    if (status === "loading") {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="flex items-center space-x-2">
+                    <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce"></div>
+                    <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce delay-75"></div>
+                    <div className="w-4 h-4 bg-blue-500 rounded-full animate-bounce delay-150"></div>
+                </div>
+            </div>
+        );
+    }
 
     if (!session) return null;
 
@@ -44,9 +54,10 @@ export default function Layout({ children }) {
                             key={item.name}
                             className={`hover:bg-gray-700 p-2 rounded cursor-pointer flex items-center ${router.pathname === item.href ? "bg-gray-700" : ""
                                 }`}
+                            onClick={() => router.push(item.href)}
                         >
                             <item.icon className="mr-2" />
-                            <a href={item.href}>{item.name}</a>
+                            <span>{item.name}</span>
                         </li>
                     ))}
                 </ul>

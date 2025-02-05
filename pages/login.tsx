@@ -9,6 +9,7 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (status === "loading") return; // Do nothing while loading
@@ -23,11 +24,14 @@ export default function Login() {
             setError("Username and password are required.");
             return;
         }
+        setLoading(true);
         const result = await signIn("credentials", {
             redirect: false,
             username,
             password,
         });
+
+        setLoading(false);
 
         if (result && result.ok) {
             window.location.href = "/dashboard";
@@ -69,9 +73,10 @@ export default function Login() {
                     </div>
                     <button
                         type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                        className={`w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+                        disabled={loading}
                     >
-                        Login
+                        {loading ? "Processing..." : "Login"}
                     </button>
                 </form>
             </div>
