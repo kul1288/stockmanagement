@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { FaTimes } from "react-icons/fa";
 
 export default function PurchaseInvoice() {
     const { data: session, status } = useSession();
@@ -12,12 +13,22 @@ export default function PurchaseInvoice() {
     const [showModal, setShowModal] = useState(false);
     const [invoiceToDelete, setInvoiceToDelete] = useState(null);
     const [error, setError] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const router = useRouter();
+
+    const handleClearFilters = () => {
+        setStartDate("");
+        setEndDate("");
+    };
 
     useEffect(() => {
         if (status === "authenticated") {
-            // Fetch purchase invoice list
-            axios.get(`http://localhost:3001/purchase-invoices?page=${page}&limit=10`, {
+            let url = `http://localhost:3001/purchase-invoices?page=${page}&limit=10`;
+            if (startDate) url += `&startDate=${startDate}`;
+            if (endDate) url += `&endDate=${endDate}`;
+
+            axios.get(url, {
                 headers: {
                     Authorization: `Bearer ${session.accessToken}`,
                 },
@@ -28,7 +39,7 @@ export default function PurchaseInvoice() {
                 console.error("Failed to fetch purchase invoices:", error);
             });
         }
-    }, [status, session, page]);
+    }, [status, session, page, startDate, endDate]);
 
     const handleCreateInvoice = () => {
         // Navigate to create purchase invoice page
@@ -81,6 +92,36 @@ export default function PurchaseInvoice() {
                     Create Purchase Invoice
                 </button>
             </div>
+
+            <div className="mb-4 flex items-end gap-4">
+                <div>
+                    <label className="block text-gray-700 mb-1">Start Date</label>
+                    <input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="px-3 py-2 border rounded"
+                    />
+                </div>
+                <div>
+                    <label className="block text-gray-700 mb-1">End Date</label>
+                    <input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="px-3 py-2 border rounded"
+                    />
+                </div>
+                {(startDate || endDate) && (
+                    <button
+                        onClick={handleClearFilters}
+                        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 flex items-center"
+                    >
+                        <FaTimes className="mr-2" /> Clear Filters
+                    </button>
+                )}
+            </div>
+
             {error && (
                 <div className="mb-4 text-red-500">
                     {error}
