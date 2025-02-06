@@ -2,6 +2,7 @@ import Layout from "../../components/Layout";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import { FaTimes } from "react-icons/fa";
 
 export default function SearchProduct() {
     const { data: session, status } = useSession();
@@ -9,22 +10,26 @@ export default function SearchProduct() {
     const [products, setProducts] = useState([]);
     const [suggestions, setSuggestions] = useState([]);
 
+    // Update the useEffect for suggestions
     useEffect(() => {
         if (searchTerm.length > 2) {
-            // Fetch product suggestions
-            axios.get(`http://localhost:3001/products/search?partNo=${searchTerm}`, {
-                headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
-                },
-            }).then(response => {
-                setSuggestions(response.data);
-            }).catch(error => {
-                console.error("Failed to fetch product suggestions:", error);
-            });
+            // Check if we already have the exact product in results
+            const exactMatch = products.some(p => p.partNo === searchTerm);
+            if (!exactMatch) {
+                axios.get(`http://localhost:3001/products/search?partNo=${searchTerm}`, {
+                    headers: {
+                        Authorization: `Bearer ${session.accessToken}`,
+                    },
+                }).then(response => {
+                    setSuggestions(response.data);
+                }).catch(error => {
+                    console.error("Failed to fetch product suggestions:", error);
+                });
+            }
         } else {
             setSuggestions([]);
         }
-    }, [searchTerm, session]);
+    }, [searchTerm, session, products]); // Add products to dependencies
 
     const handleSearch = async () => {
         if (status === "authenticated") {
@@ -42,33 +47,51 @@ export default function SearchProduct() {
         }
     };
 
+    // Update handleSuggestionClick to clear search term properly
     const handleSuggestionClick = (product) => {
         setSearchTerm(product.partNo);
         setSuggestions([]);
-        setProducts([product]);
+        // Check if product is not already in the list
+        if (!products.some(p => p.id === product.id)) {
+            setProducts([product]);
+        }
+    };
+
+    const handleClearSearch = () => {
+        setSearchTerm("");
+        setSuggestions([]);
+        setProducts([]);
     };
 
     return (
         <Layout>
             <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
                 <h2 className="text-2xl font-bold mb-6 text-blue-600">Search Product</h2>
-                <div className="mb-4">
+                <div className="mb-4 relative">
                     <label className="block text-gray-700">Part No</label>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-3 py-2 border rounded"
-                    />
-                    {suggestions.length > 0 && (
-                        <ul className="border rounded mt-2 bg-white">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full px-3 py-2 pr-8 border rounded"
+                        />
+                        {searchTerm && (
+                            <FaTimes
+                                className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700"
+                                onClick={handleClearSearch}
+                            />
+                        )}
+                    </div>
+                    {suggestions.length > 0 && searchTerm.length > 2 && !products.some(p => p.partNo === searchTerm) && (
+                        <ul className="border rounded mt-2 bg-white absolute w-full z-10">
                             {suggestions.map((suggestion) => (
                                 <li
                                     key={suggestion.id}
                                     className="px-3 py-2 cursor-pointer hover:bg-gray-200"
                                     onClick={() => handleSuggestionClick(suggestion)}
                                 >
-                                    {suggestion.partNo}
+                                    {suggestion.partNo} - {suggestion.name}
                                 </li>
                             ))}
                         </ul>
