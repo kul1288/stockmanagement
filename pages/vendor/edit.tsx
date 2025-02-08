@@ -12,6 +12,7 @@ export default function EditVendor() {
     const [phoneno, setPhoneno] = useState("");
     const [email, setEmail] = useState("");
     const [address, setAddress] = useState("");
+    const [gstNo, setGstNo] = useState(""); // Add this line
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -28,6 +29,7 @@ export default function EditVendor() {
                 setPhoneno(vendor.phoneno);
                 setEmail(vendor.email);
                 setAddress(vendor.address);
+                setGstNo(vendor.gstNo || ""); // Add this line
             }).catch(error => {
                 console.error("Failed to fetch vendor details:", error);
             });
@@ -41,7 +43,7 @@ export default function EditVendor() {
             return;
         }
 
-        const payload = { name, address, phoneno };
+        const payload = { name, address, phoneno, gstNo }; // Add gstNo to payload
         if (email) payload.email = email;
 
         try {
@@ -115,6 +117,16 @@ export default function EditVendor() {
                             value={address}
                             onChange={(e) => setAddress(e.target.value)}
                             className="w-full px-3 py-2 border rounded h-24"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">GST Number</label>
+                        <input
+                            type="text"
+                            value={gstNo}
+                            onChange={(e) => setGstNo(e.target.value)}
+                            placeholder="GST Number"
+                            className="w-full px-3 py-2 border rounded"
                         />
                     </div>
                     <button

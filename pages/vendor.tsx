@@ -83,6 +83,7 @@ export default function Vendor() {
                         <th className="py-2 px-4 border-b">Name</th>
                         <th className="py-2 px-4 border-b">Email</th>
                         <th className="py-2 px-4 border-b">Phone No</th>
+                        <th className="py-2 px-4 border-b">GST Number</th>
                         <th className="py-2 px-4 border-b">Actions</th>
                     </tr>
                 </thead>
@@ -93,6 +94,7 @@ export default function Vendor() {
                             <td className="py-2 px-4 border-b">{vendor.name}</td>
                             <td className="py-2 px-4 border-b">{vendor.email}</td>
                             <td className="py-2 px-4 border-b">{vendor.phoneno}</td>
+                            <td className="py-2 px-4 border-b">{vendor.gstNo || '-'}</td>
                             <td className="py-2 px-4 border-b">
                                 <button
                                     onClick={() => handleView(vendor.id)}

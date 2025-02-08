@@ -54,6 +54,10 @@ export default function VendorDetail() {
                         <p className="text-gray-900">{vendor.phoneno}</p>
                     </div>
                     <div className="bg-gray-100 p-4 rounded-lg">
+                        <p className="text-lg font-semibold text-gray-700">GST Number</p>
+                        <p className="text-gray-900">{vendor.gstNo || 'Not provided'}</p>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded-lg">
                         <p className="text-lg font-semibold text-gray-700">Last Modified</p>
                         <p className="text-gray-900">{formatDate(vendor.modifiedAt)}</p>
                     </div>

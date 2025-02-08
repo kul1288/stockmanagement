@@ -9,20 +9,22 @@ export default function AddProduct() {
     const router = useRouter();
     const [partNo, setPartNo] = useState("");
     const [name, setName] = useState("");
+    const [minimumQuantity, setMinimumQuantity] = useState(0);
+    const [unit, setUnit] = useState(""); // Add this line
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!partNo || !name) {
-            setError("Part number and name are required.");
+        if (!partNo || !name || !unit) { // Add unit validation
+            setError("Part number, name, and unit are required.");
             return;
         }
 
         try {
             const response = await axios.post(
                 "http://localhost:3001/products",
-                { partNo, name },
+                { partNo, name, minimumQuantity, unit }, // Add unit to payload
                 {
                     headers: {
                         Authorization: `Bearer ${session.accessToken}`,
@@ -71,6 +73,31 @@ export default function AddProduct() {
                             onChange={(e) => setName(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Minimum Quantity</label>
+                        <input
+                            type="number"
+                            value={minimumQuantity}
+                            onChange={(e) => setMinimumQuantity(Number(e.target.value))}
+                            className="w-full px-3 py-2 border rounded"
+                            min="0"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Unit</label>
+                        <select
+                            value={unit}
+                            onChange={(e) => setUnit(e.target.value)}
+                            className="w-full px-3 py-2 border rounded"
+                        >
+                            <option value="PCS">PCS</option>
+                            <option value="SET">SET</option>
+                            <option value="KG">KG</option>
+                            <option value="ML">ML</option>
+                            <option value="LTR">LTR</option>
+                            <option value="MTR">MTR</option>
+                        </select>
                     </div>
                     <button
                         type="submit"

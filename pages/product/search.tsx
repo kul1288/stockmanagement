@@ -65,9 +65,9 @@ export default function SearchProduct() {
 
     return (
         <Layout>
-            <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
+            <div className="max-w-6xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-md"> {/* Changed from max-w-md to max-w-6xl */}
                 <h2 className="text-2xl font-bold mb-6 text-blue-600">Search Product</h2>
-                <div className="mb-4 relative">
+                <div className="mb-4 relative w-96"> {/* Added fixed width for search box */}
                     <label className="block text-gray-700">Part No</label>
                     <div className="relative">
                         <input
@@ -104,6 +104,7 @@ export default function SearchProduct() {
                             <th className="py-2 px-4 border-b">Name</th>
                             <th className="py-2 px-4 border-b">Unit</th>
                             <th className="py-2 px-4 border-b">Current Stock</th>
+                            <th className="py-2 px-4 border-b">Min Quantity</th>
                             <th className="py-2 px-4 border-b">Last Purchase Price</th>
                         </tr>
                     </thead>
@@ -114,6 +115,7 @@ export default function SearchProduct() {
                                 <td className="py-2 px-4 border-b">{product.name}</td>
                                 <td className="py-2 px-4 border-b">{product.unit}</td>
                                 <td className="py-2 px-4 border-b">{product.currentStock}</td>
+                                <td className="py-2 px-4 border-b">{product.minimumQuantity || 0}</td>
                                 <td className="py-2 px-4 border-b">{product.lastPurchasePrice}</td>
                             </tr>
                         ))}

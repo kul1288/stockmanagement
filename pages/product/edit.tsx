@@ -10,6 +10,8 @@ export default function EditProduct() {
     const { id } = router.query;
     const [partNo, setPartNo] = useState("");
     const [name, setName] = useState("");
+    const [minimumQuantity, setMinimumQuantity] = useState(0);
+    const [unit, setUnit] = useState(""); // Add this line
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -24,6 +26,8 @@ export default function EditProduct() {
                 const product = response.data;
                 setPartNo(product.partNo);
                 setName(product.name);
+                setMinimumQuantity(product.minimumQuantity || 0);
+                setUnit(product.unit || ""); // Add this line
             }).catch(error => {
                 if (error.response && error.response.status === 404) {
                     setError("Product not found.");
@@ -36,15 +40,15 @@ export default function EditProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!partNo || !name) {
-            setError("Part number and name are required.");
+        if (!partNo || !name || !unit) { // Add unit validation
+            setError("Part number, name, and unit are required.");
             return;
         }
 
         try {
             const response = await axios.put(
                 `http://localhost:3001/products/${id}`,
-                { partNo, name },
+                { partNo, name, minimumQuantity, unit }, // Add unit to payload
                 {
                     headers: {
                         Authorization: `Bearer ${session.accessToken}`,
@@ -61,7 +65,9 @@ export default function EditProduct() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 404) {
+            if (err.response && err.response.status === 409) {
+                setError(err.response.data.message);
+            } else if (err.response && err.response.status === 404) {
                 setError("Product not found.");
             } else {
                 setError("Failed to update product. Please try again.");
@@ -93,6 +99,32 @@ export default function EditProduct() {
                             onChange={(e) => setName(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                         />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Minimum Quantity</label>
+                        <input
+                            type="number"
+                            value={minimumQuantity}
+                            onChange={(e) => setMinimumQuantity(Number(e.target.value))}
+                            className="w-full px-3 py-2 border rounded"
+                            min="0"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Unit</label>
+                        <select
+                            value={unit}
+                            onChange={(e) => setUnit(e.target.value)}
+                            className="w-full px-3 py-2 border rounded"
+                        >
+                            <option value="">Select Unit</option>
+                            <option value="PCS">PCS</option>
+                            <option value="SET">SET</option>
+                            <option value="KG">KG</option>
+                            <option value="ML">ML</option>
+                            <option value="LTR">LTR</option>
+                            <option value="MTR">MTR</option>
+                        </select>
                     </div>
                     <button
                         type="submit"
