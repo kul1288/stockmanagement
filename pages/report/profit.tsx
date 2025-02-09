@@ -1,12 +1,20 @@
 import Layout from "../../components/Layout";
 import { useState } from "react";
+
+interface ProfitData {
+    totalPurchase: number;
+    totalSell: number;
+    totalReturn: number;
+    totalProfit: number;
+}
+
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { FaTimes } from "react-icons/fa";
 
 export default function ProfitReport() {
     const { data: session, status } = useSession();
-    const [profitData, setProfitData] = useState(null);
+    const [profitData, setProfitData] = useState<ProfitData | null>(null);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [error, setError] = useState("");
@@ -26,7 +34,7 @@ export default function ProfitReport() {
             setError("");
         } catch (error) {
             console.error("Failed to fetch profit data:", error);
-            if (error.response && error.response.status === 400) {
+            if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
                 setError(error.response.data.message);
             } else {
                 setError("Failed to fetch profit data. Please try again.");

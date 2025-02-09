@@ -6,9 +6,17 @@ import { useRouter } from "next/router";
 import { FaTimes } from "react-icons/fa";
 import debounce from "lodash.debounce";
 
+interface Customer {
+    name: string;
+    email?: string; // Make email optional
+    phoneNumber: string;
+    address: string;
+    gstNo: string;
+}
+
 export default function CreateSellInvoice() {
     const { data: session } = useSession();
-    const [customer, setCustomer] = useState({ name: "", email: "", phoneNumber: "", address: "", gstNo: "" });
+    const [customer, setCustomer] = useState<Customer>({ name: "", email: "", phoneNumber: "", address: "", gstNo: "" });
     const [sellDate, setSellDate] = useState("");
     const [tax, setTax] = useState(false);
     const [type, setType] = useState("cash");
@@ -146,7 +154,7 @@ export default function CreateSellInvoice() {
         // Prepare customer data
         const customerData = { ...customer };
         if (!customerData.email) {
-            delete customerData.email;
+            delete customerData.email; // Now this is safe because email is optional
         }
 
         try {

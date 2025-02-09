@@ -8,7 +8,21 @@ import 'tippy.js/dist/tippy.css';
 
 export default function ReturnProductList() {
     const { data: session, status } = useSession();
-    const [returns, setReturns] = useState([]);
+    interface ReturnItem {
+        id: number;
+        returnDate: string;
+        sellInvoice: {
+            id: number;
+            customerName: string;
+        };
+        product: {
+            partNo: string;
+        };
+        quantityReturned: number;
+        reason: string;
+    }
+
+    const [returns, setReturns] = useState<ReturnItem[]>([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [startDate, setStartDate] = useState("");

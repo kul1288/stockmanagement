@@ -11,7 +11,7 @@ export default function PurchaseInvoice() {
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+    const [invoiceToDelete, setInvoiceToDelete] = useState<number | null>(null);
     const [error, setError] = useState("");
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -67,9 +67,9 @@ export default function PurchaseInvoice() {
             }
         } catch (err) {
             setShowModal(false);
-            if (err.response && err.response.status === 404) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
                 setError("Purchase invoice not found.");
-            } else if (err.response && err.response.status === 400) {
+            } else if (axios.isAxiosError(err) && err.response && err.response.status === 400) {
                 setError("Cannot delete purchase invoice with products that have been partially used.");
             } else {
                 setError("Failed to delete purchase invoice. Please try again.");

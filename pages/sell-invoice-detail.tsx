@@ -6,7 +6,32 @@ import { FaPrint } from "react-icons/fa";
 
 export default function SellInvoiceDetail() {
     const router = useRouter();
-    const [invoiceData, setInvoiceData] = useState(null);
+    interface Product {
+        id: string;
+        quantity: number;
+        returnedQuantity: number;
+        rate: number;
+        discount: number;
+        product: {
+            partNo: string;
+            name: string;
+        };
+    }
+
+    interface InvoiceData {
+        id: string;
+        customerName: string;
+        customerPhoneNumber: string;
+        customerEmail?: string;
+        customerAddress: string;
+        customerGstNo?: string;
+        sellDate: string;
+        type: string;
+        tax: number;
+        products: Product[];
+    }
+
+    const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
     const contentRef = useRef<HTMLDivElement>(null);
     const reactToPrintFn = useReactToPrint({
         contentRef,
@@ -33,7 +58,7 @@ export default function SellInvoiceDetail() {
     useEffect(() => {
         if (router.query.data) {
             try {
-                const data = JSON.parse(router.query.data);
+                const data = JSON.parse(Array.isArray(router.query.data) ? router.query.data[0] : router.query.data);
                 setInvoiceData(data);
             } catch (e) {
                 console.error("Error parsing invoice data:", e);

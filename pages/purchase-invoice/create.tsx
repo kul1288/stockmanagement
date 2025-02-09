@@ -8,7 +8,7 @@ import debounce from "lodash.debounce";
 
 export default function CreatePurchaseInvoice() {
     const { data: session, status } = useSession();
-    const [vendors, setVendors] = useState([]);
+    const [vendors, setVendors] = useState<{ id: number; name: string }[]>([]);
     const [selectedVendor, setSelectedVendor] = useState("");
     const [purchaseDate, setPurchaseDate] = useState("");
     const [tax, setTax] = useState(false);
@@ -16,7 +16,7 @@ export default function CreatePurchaseInvoice() {
     const [invoiceProducts, setInvoiceProducts] = useState([{ productId: "", partNo: "", quantity: 1, rate: 0, discount: 0 }]);
     const [error, setError] = useState("");
     const [productSearchTerms, setProductSearchTerms] = useState([""]);
-    const [productSuggestions, setProductSuggestions] = useState([[]]);
+    const [productSuggestions, setProductSuggestions] = useState<{ id: number; partNo: string; name: string }[][]>([[]]);
     const router = useRouter();
 
     useEffect(() => {
@@ -173,7 +173,7 @@ export default function CreatePurchaseInvoice() {
             }
         } catch (error) {
             console.error("Failed to create purchase invoice:", error);
-            if (error.response && error.response.status === 400) {
+            if (axios.isAxiosError(error) && error.response && error.response.status === 404) {
                 setError(error.response.data.message.join(", "));
             } else {
                 setError("Failed to create purchase invoice. Please try again.");

@@ -4,22 +4,31 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FaTimes } from "react-icons/fa";
+import type { Invoice } from "../interfaces";
 
 export default function SellInvoice() {
     const { data: session, status } = useSession();
-    const [invoices, setInvoices] = useState([]);
+    const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const router = useRouter();
     const [showModal, setShowModal] = useState(false);
-    const [invoiceToDelete, setInvoiceToDelete] = useState(null);
+    const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [successMessage, setSuccessMessage] = useState("");
     const [showReturnModal, setShowReturnModal] = useState(false);
-    const [returnInvoice, setReturnInvoice] = useState(null);
-    const [returnProducts, setReturnProducts] = useState([]);
+    const [returnInvoice, setReturnInvoice] = useState<Invoice | null>(null);
+    interface ReturnProduct {
+        productId: number;
+        partNo: string;
+        quantity: number;
+        reason: string;
+        maxQuantity: number;
+    }
+
+    const [returnProducts, setReturnProducts] = useState<ReturnProduct[]>([]);
     const [returnError, setReturnError] = useState("");
 
     useEffect(() => {
@@ -87,7 +96,11 @@ export default function SellInvoice() {
             }
         } catch (err) {
             console.error("Failed to delete invoice:", err);
-            alert(err.response?.data?.message || "Failed to delete invoice. Please try again.");
+            if (axios.isAxiosError(err) && err.response) {
+                alert(err.response.data.message || "Failed to delete invoice. Please try again.");
+            } else {
+                alert("Failed to delete invoice. Please try again.");
+            }
         }
     };
 
@@ -117,7 +130,7 @@ export default function SellInvoice() {
 
         try {
             const response = await axios.patch("http://localhost:3001/sell-invoices/return", {
-                sellInvoiceId: returnInvoice.id,
+                sellInvoiceId: returnInvoice?.id ?? 0,
                 products: returnProducts
                     .filter(product => product.quantity > 0)
                     .map(({ productId, quantity, reason }) => ({ productId, quantity, reason }))
@@ -137,7 +150,7 @@ export default function SellInvoice() {
             }
         } catch (err) {
             console.error("Failed to return products:", err);
-            if (err.response && err.response.status === 400) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 400) {
                 setReturnError(err.response.data.message.join(", "));
             } else {
                 setReturnError("Failed to return products. Please try again.");
