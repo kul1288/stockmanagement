@@ -181,7 +181,7 @@ export default function CreateSellInvoice() {
             }
         } catch (error) {
             console.error("Failed to create sell invoice:", error);
-            if (error.response && error.response.status === 400) {
+            if (axios.isAxiosError(error) && error.response && error.response.status === 400) {
                 setError(error.response.data.message);
             } else {
                 setError("Failed to create sell invoice. Please try again.");
@@ -298,7 +298,7 @@ export default function CreateSellInvoice() {
                                         )}
                                         {productSuggestions[index] && productSuggestions[index].length > 0 && (
                                             <ul className="border rounded mt-2 bg-white absolute z-10 w-full">
-                                                {productSuggestions[index].map((suggestion) => (
+                                                {productSuggestions[index].map((suggestion: { id: string; partNo: string; name: string }) => (
                                                     <li
                                                         key={suggestion.id}
                                                         className="px-3 py-2 cursor-pointer hover:bg-gray-200"
