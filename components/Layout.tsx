@@ -1,7 +1,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { FaHome, FaUser, FaBox, FaFileInvoice, FaChartLine, FaSignOutAlt } from "react-icons/fa";
+import { FaHome, FaUser, FaBox, FaFileInvoice, FaChartLine, FaSignOutAlt, FaUndo } from "react-icons/fa";
 
 export default function Layout({ children }) {
     const { data: session, status } = useSession();
@@ -42,6 +42,7 @@ export default function Layout({ children }) {
         { name: "Product", icon: FaBox, href: "/product" },
         { name: "Purchase Invoice", icon: FaFileInvoice, href: "/purchase-invoice" },
         { name: "Sell Invoice", icon: FaFileInvoice, href: "/sell-invoice" },
+        { name: "Return Product List", icon: FaUndo, href: "/return-product-list" },
         { name: "Report", icon: FaChartLine, href: "/report" },
     ];
 
