@@ -28,7 +28,7 @@ export default function ReturnProductList() {
         try {
             const response = await axios.get(url, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
             setReturns(response.data.data);

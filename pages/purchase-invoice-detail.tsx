@@ -8,7 +8,34 @@ export default function PurchaseInvoiceDetail() {
     const router = useRouter();
     const { id } = router.query;
     const { data: session, status } = useSession();
-    const [invoiceData, setInvoiceData] = useState(null);
+    interface Product {
+        id: string;
+        product: {
+            partNo: string;
+            name: string;
+        };
+        quantity: number;
+        rate: number;
+        discount: number;
+    }
+
+    interface Vendor {
+        name: string;
+        address: string;
+        email: string;
+        phoneno: string;
+    }
+
+    interface InvoiceData {
+        id: string;
+        purchaseDate: string;
+        type: string;
+        vendor: Vendor;
+        products: Product[];
+        tax: number;
+    }
+
+    const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -94,25 +121,25 @@ export default function PurchaseInvoiceDetail() {
                             );
                         })}
                         <tr>
-                            <td colSpan="4"></td>
+                            <td colSpan={4}></td>
                             <td className="py-2 px-4 border-b">Discount</td>
                             <td className="py-2 px-4 border-b">{totalDiscountAmount}</td>
                         </tr>
                         <tr>
-                            <td colSpan="4"></td>
+                            <td colSpan={4}></td>
                             <td className="py-2 px-4 border-b font-bold">{taxAmount > 0 ? "Subtotal" : "Total Amount"}</td>
                             <td className="py-2 px-4 border-b font-bold">{totalAmount}</td>
                         </tr>
                         {taxAmount > 0 && (
                             <tr>
-                                <td colSpan="4"></td>
+                                <td colSpan={4}></td>
                                 <td className="py-2 px-4 border-b font-bold">Tax ({invoiceData.tax}%)</td>
                                 <td className="py-2 px-4 border-b font-bold">{taxAmount}</td>
                             </tr>
                         )}
                         {taxAmount > 0 && (
                             <tr>
-                                <td colSpan="4"></td>
+                                <td colSpan={4}></td>
                                 <td className="py-2 px-4 border-b font-bold">Total Amount</td>
                                 <td className="py-2 px-4 border-b font-bold">{finalAmount}</td>
                             </tr>

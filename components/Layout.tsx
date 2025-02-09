@@ -2,8 +2,10 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { FaHome, FaUser, FaBox, FaFileInvoice, FaChartLine, FaSignOutAlt, FaUndo } from "react-icons/fa";
+import { ReactNode } from "react";
+interface LayoutProps { children: ReactNode; }
 
-export default function Layout({ children }) {
+export default function Layout({ children }: LayoutProps) {
     const { data: session, status } = useSession();
     const router = useRouter();
 

@@ -41,7 +41,7 @@ export default function Vendor() {
         try {
             const response = await axios.delete(`http://localhost:3001/vendors/${vendorToDelete}`, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
 

@@ -51,7 +51,7 @@ export default function EditProduct() {
                 { partNo, name, minimumQuantity, unit }, // Add unit to payload
                 {
                     headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
+                        Authorization: `Bearer ${session?.accessToken}`,
                         "Content-Type": "application/json",
                     },
                 }
@@ -65,9 +65,9 @@ export default function EditProduct() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 409) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 409) {
                 setError(err.response.data.message);
-            } else if (err.response && err.response.status === 404) {
+            } else if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
                 setError("Product not found.");
             } else {
                 setError("Failed to update product. Please try again.");

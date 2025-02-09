@@ -73,7 +73,7 @@ export default function SellInvoice() {
         try {
             const response = await axios.delete(`http://localhost:3001/sell-invoices/${invoiceToDelete}`, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
 
@@ -123,7 +123,7 @@ export default function SellInvoice() {
                     .map(({ productId, quantity, reason }) => ({ productId, quantity, reason }))
             }, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                     "Content-Type": "application/json",
                 },
             });

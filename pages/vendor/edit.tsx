@@ -52,7 +52,7 @@ export default function EditVendor() {
                 payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
+                        Authorization: `Bearer ${session?.accessToken}`,
                         "Content-Type": "application/json",
                     },
                 }

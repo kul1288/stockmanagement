@@ -19,7 +19,7 @@ export default function ProfitReport() {
         try {
             const response = await axios.get(url, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
             setProfitData(response.data);

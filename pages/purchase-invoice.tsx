@@ -7,7 +7,7 @@ import { FaTimes } from "react-icons/fa";
 
 export default function PurchaseInvoice() {
     const { data: session, status } = useSession();
-    const [invoices, setInvoices] = useState([]);
+    const [invoices, setInvoices] = useState<{ id: number; purchaseDate: string; type: string; products: { rate: number; quantity: number; discount: number; }[]; }[]>([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
@@ -55,7 +55,7 @@ export default function PurchaseInvoice() {
         try {
             const response = await axios.delete(`http://localhost:3001/purchase-invoices/${invoiceToDelete}`, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
 

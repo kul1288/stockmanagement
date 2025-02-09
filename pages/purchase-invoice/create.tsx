@@ -41,7 +41,7 @@ export default function CreatePurchaseInvoice() {
                 try {
                     const response = await axios.get(`http://localhost:3001/products/search?partNo=${term}`, {
                         headers: {
-                            Authorization: `Bearer ${session.accessToken}`,
+                            Authorization: `Bearer ${session?.accessToken}`,
                         },
                     });
 
@@ -163,7 +163,7 @@ export default function CreatePurchaseInvoice() {
                 })),
             }, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                     "Content-Type": "application/json",
                 },
             });

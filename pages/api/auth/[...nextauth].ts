@@ -1,6 +1,12 @@
-import NextAuth, { Session } from "next-auth";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
+import { User } from "next-auth";
+
+interface CustomUser extends User {
+    refreshToken?: string;
+}
 
 declare module "next-auth" {
     interface Session {
@@ -49,13 +55,15 @@ export default NextAuth({
         async jwt({ token, user }) {
             if (user) {
                 token.accessToken = user.id;
-                token.refreshToken = user.refreshToken;
+                token.refreshToken = (user as CustomUser).refreshToken;
             }
             return token;
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken as string;
-            session.refreshToken = token.refreshToken as string;
+            if (token.refreshToken) {
+                session.refreshToken = token.refreshToken as string;
+            }
             return session;
         },
     },

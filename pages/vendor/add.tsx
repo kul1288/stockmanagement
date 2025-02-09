@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function AddVendor() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
     const [name, setName] = useState("");
     const [phoneno, setPhoneno] = useState("");
@@ -31,7 +31,7 @@ export default function AddVendor() {
                 payload,
                 {
                     headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
+                        Authorization: `Bearer ${session?.accessToken}`,
                         "Content-Type": "application/json",
                     },
                 }

@@ -87,7 +87,7 @@ export default function Dashboard() {
                                 <h3 className="text-white text-4xl font-bold">
                                     ₹{creditSales.toLocaleString()}
                                 </h3>
-                                <p className="text-purple-100 mt-2">Today's Credit</p>
+                                <p className="text-purple-100 mt-2">Today&apos;s Credit</p>
                             </div>
                             <div className="bg-purple-400 rounded-full p-4">
                                 <FaCreditCard className="text-white text-3xl" />

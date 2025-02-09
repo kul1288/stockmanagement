@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 export default function AddProduct() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const router = useRouter();
     const [partNo, setPartNo] = useState("");
     const [name, setName] = useState("");
@@ -27,7 +27,7 @@ export default function AddProduct() {
                 { partNo, name, minimumQuantity, unit }, // Add unit to payload
                 {
                     headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
+                        Authorization: `Bearer ${session?.accessToken}`,
                         "Content-Type": "application/json",
                     },
                 }
@@ -41,7 +41,7 @@ export default function AddProduct() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 409) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 409) {
                 setError(err.response.data.message);
             } else {
                 setError("Failed to add product. Please try again.");

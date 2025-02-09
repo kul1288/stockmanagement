@@ -1,5 +1,5 @@
 import Layout from "../../components/Layout";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -7,7 +7,7 @@ import { FaTimes } from "react-icons/fa";
 import debounce from "lodash.debounce";
 
 export default function CreateSellInvoice() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [customer, setCustomer] = useState({ name: "", email: "", phoneNumber: "", address: "", gstNo: "" });
     const [sellDate, setSellDate] = useState("");
     const [tax, setTax] = useState(false);
@@ -25,7 +25,7 @@ export default function CreateSellInvoice() {
                 try {
                     const response = await axios.get(`http://localhost:3001/products/search?partNo=${term}`, {
                         headers: {
-                            Authorization: `Bearer ${session.accessToken}`,
+                            Authorization: `Bearer ${session?.accessToken}`,
                         },
                     });
 
@@ -163,7 +163,7 @@ export default function CreateSellInvoice() {
                 })),
             }, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                     "Content-Type": "application/json",
                 },
             });

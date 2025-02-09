@@ -5,10 +5,10 @@ import { useSession } from "next-auth/react";
 import { FaTimes } from "react-icons/fa";
 
 export default function SearchProduct() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [searchTerm, setSearchTerm] = useState("");
-    const [products, setProducts] = useState([]);
-    const [suggestions, setSuggestions] = useState([]);
+    const [products, setProducts] = useState<{ id: number; partNo: string; name: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
+    const [suggestions, setSuggestions] = useState<{ id: number; partNo: string; name: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
 
     // Update the useEffect for suggestions
     useEffect(() => {
@@ -18,7 +18,7 @@ export default function SearchProduct() {
             if (!exactMatch) {
                 axios.get(`http://localhost:3001/products/search?partNo=${searchTerm}`, {
                     headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
+                        Authorization: `Bearer ${session?.accessToken}`,
                     },
                 }).then(response => {
                     setSuggestions(response.data);
@@ -30,22 +30,6 @@ export default function SearchProduct() {
             setSuggestions([]);
         }
     }, [searchTerm, session, products]); // Add products to dependencies
-
-    const handleSearch = async () => {
-        if (status === "authenticated") {
-            try {
-                const response = await axios.get(`http://localhost:3001/products/search?partNo=${searchTerm}`, {
-                    headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
-                    },
-                });
-                setProducts(response.data);
-                setSuggestions([]); // Clear suggestions after search
-            } catch (error) {
-                console.error("Failed to search products:", error);
-            }
-        }
-    };
 
     // Update handleSuggestionClick to clear search term properly
     const handleSuggestionClick = (product) => {

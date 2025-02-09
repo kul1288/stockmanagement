@@ -3,23 +3,25 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import type { Product } from "../interfaces";
+import type { AxiosError } from 'axios';
 
 export default function Product() {
     const { data: session, status } = useSession();
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
     const [showModal, setShowModal] = useState(false);
-    const [productToDelete, setProductToDelete] = useState(null);
+    const [productToDelete, setProductToDelete] = useState<string | null>(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        if (status === "authenticated") {
+        if (status === "authenticated" && session) {
             // Fetch product list
             axios.get(`http://localhost:3001/products?page=${page}&limit=10`, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             }).then(response => {
                 setProducts(response.data.data);
@@ -40,7 +42,7 @@ export default function Product() {
         router.push("/product/search");
     };
 
-    const handleEditProduct = (id) => {
+    const handleEditProduct = (id: string) => {
         // Navigate to edit product page
         router.push(`/product/edit?id=${id}`);
     };
@@ -49,7 +51,7 @@ export default function Product() {
         try {
             const response = await axios.delete(`http://localhost:3001/products/${productToDelete}`, {
                 headers: {
-                    Authorization: `Bearer ${session.accessToken}`,
+                    Authorization: `Bearer ${session?.accessToken}`,
                 },
             });
 
@@ -59,8 +61,9 @@ export default function Product() {
                 // Remove the deleted product from the state
                 setProducts(products.filter(product => product.id !== productToDelete));
             }
-        } catch (err) {
-            if (err.response && err.response.status === 404) {
+        } catch (err: unknown) {
+            const error = err as AxiosError;
+            if (error.response && error.response.status === 404) {
                 alert("Product not found.");
             } else {
                 alert("Failed to delete product. Please try again.");
