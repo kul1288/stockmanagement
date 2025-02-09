@@ -50,17 +50,18 @@ export default function SellInvoiceDetail() {
     }
 
     const totalAmount = invoiceData.products.reduce((total, product) => {
-        const discountAmount = (product.rate * product.quantity) * (product.discount / 100);
-        return total + (product.rate * product.quantity) - discountAmount;
+        const netQuantity = product.quantity - product.returnedQuantity;
+        const discountAmount = (product.rate * netQuantity) * (product.discount / 100);
+        return total + (product.rate * netQuantity) - discountAmount;
     }, 0);
 
     const totalDiscountAmount = invoiceData.products.reduce((total, product) => {
-        return total + (product.rate * product.quantity) * (product.discount / 100);
+        const netQuantity = product.quantity - product.returnedQuantity;
+        return total + (product.rate * netQuantity) * (product.discount / 100);
     }, 0);
 
     const taxAmount = invoiceData.tax > 0 ? (totalAmount * invoiceData.tax / 100) : 0;
     const finalAmount = totalAmount + taxAmount;
-
 
     return (
         <Layout>
@@ -85,7 +86,9 @@ export default function SellInvoiceDetail() {
                         <div>
                             <p>{invoiceData.customerName}</p>
                             <p>{invoiceData.customerPhoneNumber}</p>
-                            <p>{invoiceData.customerEmail || 'N/A'}</p>
+                            {invoiceData.customerEmail && (
+                                <p>{invoiceData.customerEmail}</p>
+                            )}
                             <p>{invoiceData.customerAddress}</p>
                             {invoiceData.customerGstNo && (
                                 <p><strong>GST No:</strong> {invoiceData.customerGstNo}</p>
@@ -107,6 +110,7 @@ export default function SellInvoiceDetail() {
                                 <th className="py-2 px-4 border">Part No</th>
                                 <th className="py-2 px-4 border">Name</th>
                                 <th className="py-2 px-4 border">Quantity</th>
+                                <th className="py-2 px-4 border">Returned Quantity</th>
                                 <th className="py-2 px-4 border">Rate</th>
                                 <th className="py-2 px-4 border">Discount (%)</th>
                                 <th className="py-2 px-4 border">Total</th>
@@ -114,13 +118,15 @@ export default function SellInvoiceDetail() {
                         </thead>
                         <tbody>
                             {invoiceData.products.map((product) => {
-                                const discountAmount = (product.rate * product.quantity) * (product.discount / 100);
-                                const total = (product.rate * product.quantity) - discountAmount;
+                                const netQuantity = product.quantity - product.returnedQuantity;
+                                const discountAmount = (product.rate * netQuantity) * (product.discount / 100);
+                                const total = (product.rate * netQuantity) - discountAmount;
                                 return (
                                     <tr key={product.id}>
                                         <td className="py-2 px-4 border">{product.product.partNo}</td>
                                         <td className="py-2 px-4 border">{product.product.name}</td>
                                         <td className="py-2 px-4 border">{product.quantity}</td>
+                                        <td className="py-2 px-4 border">{product.returnedQuantity}</td>
                                         <td className="py-2 px-4 border">₹{product.rate}</td>
                                         <td className="py-2 px-4 border">{product.discount}%</td>
                                         <td className="py-2 px-4 border">₹{total}</td>

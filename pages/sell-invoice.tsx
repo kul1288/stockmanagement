@@ -16,6 +16,11 @@ export default function SellInvoice() {
     const [showModal, setShowModal] = useState(false);
     const [invoiceToDelete, setInvoiceToDelete] = useState(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [successMessage, setSuccessMessage] = useState("");
+    const [showReturnModal, setShowReturnModal] = useState(false);
+    const [returnInvoice, setReturnInvoice] = useState(null);
+    const [returnProducts, setReturnProducts] = useState([]);
+    const [returnError, setReturnError] = useState("");
 
     useEffect(() => {
         if (status === "authenticated") {
@@ -57,7 +62,8 @@ export default function SellInvoice() {
 
     const calculateTotal = (products) => {
         return products.reduce((total, item) => {
-            const itemTotal = item.quantity * item.rate;
+            const netQuantity = item.quantity - item.returnedQuantity;
+            const itemTotal = netQuantity * item.rate;
             const discountAmount = (itemTotal * item.discount) / 100;
             return total + (itemTotal - discountAmount);
         }, 0);
@@ -73,6 +79,7 @@ export default function SellInvoice() {
 
             if (response.status === 200) {
                 setShowModal(false);
+                setSuccessMessage(response.data.message);
                 setShowSuccessModal(true);
                 // Remove the deleted invoice from the state
                 setInvoices(invoices.filter(invoice => invoice.id !== invoiceToDelete));
@@ -81,6 +88,60 @@ export default function SellInvoice() {
         } catch (err) {
             console.error("Failed to delete invoice:", err);
             alert(err.response?.data?.message || "Failed to delete invoice. Please try again.");
+        }
+    };
+
+    const handleReturnInvoice = (invoice) => {
+        setReturnInvoice(invoice);
+        setReturnProducts(invoice.products.map(product => ({
+            productId: product.product.id,
+            partNo: product.product.partNo,
+            quantity: 0,
+            reason: "",
+            maxQuantity: product.quantity - product.returnedQuantity
+        })));
+        setShowReturnModal(true);
+    };
+
+    const handleReturnProductChange = (index, field, value) => {
+        const newReturnProducts = [...returnProducts];
+        newReturnProducts[index][field] = field === "quantity" ? Number(value) : value;
+        setReturnProducts(newReturnProducts);
+    };
+
+    const handleSubmitReturn = async () => {
+        if (returnProducts.some(product => product.quantity > product.maxQuantity)) {
+            setReturnError("Returned quantity cannot be greater than purchased quantity.");
+            return;
+        }
+
+        try {
+            const response = await axios.patch("http://localhost:3001/sell-invoices/return", {
+                sellInvoiceId: returnInvoice.id,
+                products: returnProducts
+                    .filter(product => product.quantity > 0)
+                    .map(({ productId, quantity, reason }) => ({ productId, quantity, reason }))
+            }, {
+                headers: {
+                    Authorization: `Bearer ${session.accessToken}`,
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (response.status === 200) {
+                setShowReturnModal(false);
+                setSuccessMessage(response.data.message);
+                setShowSuccessModal(true);
+                setReturnInvoice(null);
+                setReturnProducts([]);
+            }
+        } catch (err) {
+            console.error("Failed to return products:", err);
+            if (err.response && err.response.status === 400) {
+                setReturnError(err.response.data.message.join(", "));
+            } else {
+                setReturnError("Failed to return products. Please try again.");
+            }
         }
     };
 
@@ -162,9 +223,15 @@ export default function SellInvoice() {
                                                 setInvoiceToDelete(invoice.id);
                                                 setShowModal(true);
                                             }}
-                                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600"
+                                            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-600 mr-2"
                                         >
                                             Delete
+                                        </button>
+                                        <button
+                                            onClick={() => handleReturnInvoice(invoice)}
+                                            className="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600"
+                                        >
+                                            Return
                                         </button>
                                     </td>
                                 </tr>
@@ -215,12 +282,59 @@ export default function SellInvoice() {
                     </div>
                 )}
 
+                {/* Return Modal */}
+                {showReturnModal && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+                        <div className="bg-white p-6 rounded shadow-md w-full max-w-lg">
+                            <h3 className="text-xl font-bold mb-4">Return Products</h3>
+                            {returnError && <div className="mb-4 text-red-500">{returnError}</div>}
+                            {returnProducts.map((product, index) => (
+                                <div key={index} className="mb-4">
+                                    <div className="flex justify-between mb-2">
+                                        <span>{product.partNo}</span>
+                                        <span>Max: {product.maxQuantity}</span>
+                                    </div>
+                                    <input
+                                        type="number"
+                                        placeholder="Quantity"
+                                        value={product.quantity}
+                                        onChange={(e) => handleReturnProductChange(index, "quantity", e.target.value)}
+                                        className="w-full px-3 py-2 border rounded mb-2"
+                                        max={product.maxQuantity}
+                                    />
+                                    <input
+                                        type="text"
+                                        placeholder="Reason (optional)"
+                                        value={product.reason}
+                                        onChange={(e) => handleReturnProductChange(index, "reason", e.target.value)}
+                                        className="w-full px-3 py-2 border rounded"
+                                    />
+                                </div>
+                            ))}
+                            <div className="flex justify-end">
+                                <button
+                                    onClick={() => setShowReturnModal(false)}
+                                    className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 mr-2"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSubmitReturn}
+                                    className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600"
+                                >
+                                    Return
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Success Modal */}
                 {showSuccessModal && (
                     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
                         <div className="bg-white p-6 rounded shadow-md">
                             <h3 className="text-xl font-bold mb-4">Success</h3>
-                            <p className="mb-4">Invoice deleted successfully.</p>
+                            <p className="mb-4">{successMessage}</p>
                             <div className="flex justify-end">
                                 <button
                                     onClick={() => setShowSuccessModal(false)}
