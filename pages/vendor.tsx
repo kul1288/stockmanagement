@@ -6,9 +6,9 @@ import { useRouter } from "next/router";
 
 export default function Vendor() {
     const { data: session, status } = useSession();
-    const [vendors, setVendors] = useState([]);
+    const [vendors, setVendors] = useState<{ id: number; name: string; email: string; phoneno: string; gstNo?: string }[]>([]);
     const [showModal, setShowModal] = useState(false);
-    const [vendorToDelete, setVendorToDelete] = useState(null);
+    const [vendorToDelete, setVendorToDelete] = useState<number | null>(null);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const router = useRouter();
 
@@ -52,7 +52,7 @@ export default function Vendor() {
                 setVendors(vendors.filter(vendor => vendor.id !== vendorToDelete));
             }
         } catch (err) {
-            if (err.response && err.response.status === 404) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
                 alert("Vendor not found.");
             } else {
                 alert("Failed to delete vendor. Please try again.");

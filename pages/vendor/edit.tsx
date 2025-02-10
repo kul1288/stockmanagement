@@ -43,7 +43,7 @@ export default function EditVendor() {
             return;
         }
 
-        const payload = { name, address, phoneno, gstNo }; // Add gstNo to payload
+        const payload: { name: string; address: string; phoneno: string; gstNo: string; email?: string } = { name, address, phoneno, gstNo }; // Add gstNo to payload
         if (email) payload.email = email;
 
         try {
@@ -66,9 +66,9 @@ export default function EditVendor() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 400) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 409) {
                 setError(err.response.data.message);
-            } else if (err.response && err.response.status === 404) {
+            } else if (axios.isAxiosError(err) && err.response && err.response.status === 404) {
                 setError("Vendor not found.");
             } else {
                 setError("Failed to update vendor. Please try again.");

@@ -22,7 +22,7 @@ export default function AddVendor() {
             return;
         }
 
-        const payload = { name, address, phoneno, gstNo }; // Add gstNo to payload
+        const payload: { name: string; address: string; phoneno: string; gstNo: string; email?: string } = { name, address, phoneno, gstNo }; // Add gstNo to payload
         if (email) payload.email = email;
 
         try {
@@ -45,7 +45,7 @@ export default function AddVendor() {
                 }, 2000);
             }
         } catch (err) {
-            if (err.response && err.response.status === 400) {
+            if (axios.isAxiosError(err) && err.response && err.response.status === 400) {
                 setError(err.response.data.message);
             } else {
                 setError("Failed to add vendor. Please try again.");

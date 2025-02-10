@@ -8,7 +8,16 @@ export default function VendorDetail() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const { id } = router.query;
-    const [vendor, setVendor] = useState(null);
+    interface Vendor {
+        name: string;
+        address: string;
+        email: string;
+        phoneno: string;
+        gstNo?: string;
+        modifiedAt: string;
+    }
+
+    const [vendor, setVendor] = useState<Vendor | null>(null);
 
     useEffect(() => {
         if (status === "authenticated" && id) {
@@ -28,7 +37,7 @@ export default function VendorDetail() {
     if (!vendor) return <div>Loading...</div>;
 
     const formatDate = (dateString) => {
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const options = { day: '2-digit' as const, month: '2-digit' as const, year: 'numeric' as const, hour: '2-digit' as const, minute: '2-digit' as const };
         return new Date(dateString).toLocaleDateString('en-GB', options).replace(',', '');
     };
 
