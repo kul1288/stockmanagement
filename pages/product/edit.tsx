@@ -10,6 +10,7 @@ export default function EditProduct() {
     const { id } = router.query;
     const [partNo, setPartNo] = useState("");
     const [name, setName] = useState("");
+    const [commonName, setCommonName] = useState(""); // Add this line
     const [minimumQuantity, setMinimumQuantity] = useState(0);
     const [unit, setUnit] = useState(""); // Add this line
     const [error, setError] = useState("");
@@ -26,6 +27,7 @@ export default function EditProduct() {
                 const product = response.data;
                 setPartNo(product.partNo);
                 setName(product.name);
+                setCommonName(product.commonName); // Add this line
                 setMinimumQuantity(product.minimumQuantity || 0);
                 setUnit(product.unit || ""); // Add this line
             }).catch(error => {
@@ -40,15 +42,15 @@ export default function EditProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!partNo || !name || !unit) { // Add unit validation
-            setError("Part number, name, and unit are required.");
+        if (!partNo || !name || !unit || !commonName) { // Add commonName validation
+            setError("Part number, name, common name, and unit are required.");
             return;
         }
 
         try {
             const response = await axios.put(
                 `http://localhost:3001/products/${id}`,
-                { partNo, name, minimumQuantity, unit }, // Add unit to payload
+                { partNo, name, commonName, minimumQuantity, unit }, // Add commonName to payload
                 {
                     headers: {
                         Authorization: `Bearer ${session?.accessToken}`,
@@ -97,6 +99,15 @@ export default function EditProduct() {
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            className="w-full px-3 py-2 border rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Common Name</label> {/* Add this block */}
+                        <input
+                            type="text"
+                            value={commonName}
+                            onChange={(e) => setCommonName(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                         />
                     </div>

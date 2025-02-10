@@ -7,8 +7,8 @@ import { FaTimes } from "react-icons/fa";
 export default function SearchProduct() {
     const { data: session } = useSession();
     const [searchTerm, setSearchTerm] = useState("");
-    const [products, setProducts] = useState<{ id: number; partNo: string; name: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
-    const [suggestions, setSuggestions] = useState<{ id: number; partNo: string; name: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
+    const [products, setProducts] = useState<{ id: number; partNo: string; name: string; commonName: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
+    const [suggestions, setSuggestions] = useState<{ id: number; partNo: string; name: string; commonName: string; unit: string; currentStock: number; minimumQuantity?: number; lastPurchasePrice: number; }[]>([]);
 
     // Update the useEffect for suggestions
     useEffect(() => {
@@ -75,7 +75,7 @@ export default function SearchProduct() {
                                     className="px-3 py-2 cursor-pointer hover:bg-gray-200"
                                     onClick={() => handleSuggestionClick(suggestion)}
                                 >
-                                    {suggestion.partNo} - {suggestion.name}
+                                    {suggestion.partNo} - {suggestion.name} - {suggestion.commonName} {/* Add this line */}
                                 </li>
                             ))}
                         </ul>
@@ -86,6 +86,7 @@ export default function SearchProduct() {
                         <tr>
                             <th className="py-2 px-4 border-b">Part No</th>
                             <th className="py-2 px-4 border-b">Name</th>
+                            <th className="py-2 px-4 border-b">Common Name</th> {/* Add this line */}
                             <th className="py-2 px-4 border-b">Unit</th>
                             <th className="py-2 px-4 border-b">Current Stock</th>
                             <th className="py-2 px-4 border-b">Min Quantity</th>
@@ -97,6 +98,7 @@ export default function SearchProduct() {
                             <tr key={product.id}>
                                 <td className="py-2 px-4 border-b">{product.partNo}</td>
                                 <td className="py-2 px-4 border-b">{product.name}</td>
+                                <td className="py-2 px-4 border-b">{product.commonName}</td> {/* Add this line */}
                                 <td className="py-2 px-4 border-b">{product.unit}</td>
                                 <td className="py-2 px-4 border-b">{product.currentStock}</td>
                                 <td className="py-2 px-4 border-b">{product.minimumQuantity || 0}</td>

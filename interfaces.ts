@@ -2,6 +2,7 @@ export interface Product {
     id: string;
     partNo: string;
     name: string;
+    commonName: string;
     unit: string;
     currentStock: number;
     minimumQuantity?: number;

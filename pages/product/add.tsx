@@ -9,6 +9,7 @@ export default function AddProduct() {
     const router = useRouter();
     const [partNo, setPartNo] = useState("");
     const [name, setName] = useState("");
+    const [commonName, setCommonName] = useState(""); // Add this line
     const [minimumQuantity, setMinimumQuantity] = useState(0);
     const [unit, setUnit] = useState(""); // Add this line
     const [error, setError] = useState("");
@@ -16,15 +17,15 @@ export default function AddProduct() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!partNo || !name || !unit) { // Add unit validation
-            setError("Part number, name, and unit are required.");
+        if (!partNo || !name || !unit || !commonName) { // Add commonName validation
+            setError("Part number, name, common name, and unit are required.");
             return;
         }
 
         try {
             const response = await axios.post(
                 "http://localhost:3001/products",
-                { partNo, name, minimumQuantity, unit }, // Add unit to payload
+                { partNo, name, commonName, minimumQuantity, unit }, // Add commonName to payload
                 {
                     headers: {
                         Authorization: `Bearer ${session?.accessToken}`,
@@ -71,6 +72,15 @@ export default function AddProduct() {
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
+                            className="w-full px-3 py-2 border rounded"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700">Common Name</label> {/* Add this block */}
+                        <input
+                            type="text"
+                            value={commonName}
+                            onChange={(e) => setCommonName(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                         />
                     </div>

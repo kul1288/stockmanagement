@@ -100,9 +100,8 @@ export default function Product() {
                         <th className="py-2 px-4 border-b">#</th>
                         <th className="py-2 px-4 border-b">Part No</th>
                         <th className="py-2 px-4 border-b">Name</th>
-                        <th className="py-2 px-4 border-b">Unit</th>
+                        <th className="py-2 px-4 border-b">Common Name</th>
                         <th className="py-2 px-4 border-b">Current Stock</th>
-                        <th className="py-2 px-4 border-b">Min Quantity</th>
                         <th className="py-2 px-4 border-b">Last Purchase Price</th>
                         <th className="py-2 px-4 border-b">Actions</th>
                     </tr>
@@ -113,9 +112,8 @@ export default function Product() {
                             <td className="py-2 px-4 border-b">{index + 1 + (page - 1) * 10}</td>
                             <td className="py-2 px-4 border-b">{product.partNo}</td>
                             <td className="py-2 px-4 border-b">{product.name}</td>
-                            <td className="py-2 px-4 border-b">{product.unit}</td>
+                            <td className="py-2 px-4 border-b">{product.commonName}</td>
                             <td className="py-2 px-4 border-b">{product.currentStock}</td>
-                            <td className="py-2 px-4 border-b">{product.minimumQuantity || 0}</td>
                             <td className="py-2 px-4 border-b">{product.lastPurchasePrice}</td>
                             <td className="py-2 px-4 border-b">
                                 <button
