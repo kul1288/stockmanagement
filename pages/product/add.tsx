@@ -11,13 +11,14 @@ export default function AddProduct() {
     const [name, setName] = useState("");
     const [commonName, setCommonName] = useState(""); // Add this line
     const [minimumQuantity, setMinimumQuantity] = useState(0);
-    const [unit, setUnit] = useState(""); // Add this line
+    const [unit, setUnit] = useState("PCS"); // Set default value to "PCS"
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!partNo || !name || !unit || !commonName) { // Add commonName validation
+            console.log(partNo, name, commonName, unit);
             setError("Part number, name, common name, and unit are required.");
             return;
         }

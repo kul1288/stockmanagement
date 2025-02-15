@@ -12,7 +12,7 @@ export default function EditProduct() {
     const [name, setName] = useState("");
     const [commonName, setCommonName] = useState(""); // Add this line
     const [minimumQuantity, setMinimumQuantity] = useState(0);
-    const [unit, setUnit] = useState(""); // Add this line
+    const [unit, setUnit] = useState("PCS"); // Set default value to "PCS"
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
 
@@ -29,7 +29,7 @@ export default function EditProduct() {
                 setName(product.name);
                 setCommonName(product.commonName); // Add this line
                 setMinimumQuantity(product.minimumQuantity || 0);
-                setUnit(product.unit || ""); // Add this line
+                setUnit(product.unit || "PCS"); // Set default value to "PCS"
             }).catch(error => {
                 if (error.response && error.response.status === 404) {
                     setError("Product not found.");
@@ -128,7 +128,6 @@ export default function EditProduct() {
                             onChange={(e) => setUnit(e.target.value)}
                             className="w-full px-3 py-2 border rounded"
                         >
-                            <option value="">Select Unit</option>
                             <option value="PCS">PCS</option>
                             <option value="SET">SET</option>
                             <option value="KG">KG</option>
